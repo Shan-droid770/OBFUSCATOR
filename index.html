@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Obfr — Obfuscateur JavaScript</title>
-<meta name="description" content="Rends ton code JavaScript illisible. Tout se passe dans ton navigateur.">
+<title>Obfr — JavaScript Obfuscator</title>
+<meta name="description" content="Make your JavaScript code unreadable. Everything happens in your browser.">
+
+<script>
+  (function(){
+    try{
+      var t = localStorage.getItem("obfr-theme") || "dark";
+      document.documentElement.setAttribute("data-theme", t);
+    }catch(e){}
+  })();
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,9 +34,134 @@
   --accent:#6C8CFF;
   --accent-soft:rgba(108,140,255,0.14);
   --accent-dim:#3A4470;
+  --on-accent:#0A0B0D;
   --mono:'IBM Plex Mono','SFMono-Regular',monospace;
   --sans:'Inter',-apple-system,sans-serif;
   --radius:10px;
+}
+
+/* =========================
+   THEMES
+========================= */
+
+[data-theme="amoled"]{
+  --bg:#000000;
+  --bg-panel:#060608;
+  --bg-panel-2:#0C0C10;
+  --border:#1B1C21;
+  --border-soft:#121317;
+  --text:#EDEDF0;
+  --text-dim:#9A9FA8;
+  --text-faint:#5A5F68;
+  --accent:#E8E8EE;
+  --accent-soft:rgba(232,232,238,0.10);
+  --accent-dim:#4A4A52;
+  --on-accent:#000000;
+}
+
+[data-theme="white"]{
+  --bg:#F6F7F9;
+  --bg-panel:#FFFFFF;
+  --bg-panel-2:#EEF0F4;
+  --border:#DDE1E7;
+  --border-soft:#E9EBEF;
+  --text:#17181C;
+  --text-dim:#5C6169;
+  --text-faint:#9AA0A8;
+  --accent:#2F5BEA;
+  --accent-soft:rgba(47,91,234,0.10);
+  --accent-dim:#C6D2F6;
+  --on-accent:#FFFFFF;
+}
+
+[data-theme="purple"]{
+  --bg:#0D0A14;
+  --bg-panel:#151025;
+  --bg-panel-2:#1A142E;
+  --border:#2A2140;
+  --border-soft:#201833;
+  --text:#EAE6F5;
+  --text-dim:#9A90B5;
+  --text-faint:#5C5475;
+  --accent:#A78BFA;
+  --accent-soft:rgba(167,139,250,0.16);
+  --accent-dim:#443A63;
+  --on-accent:#140F24;
+}
+
+[data-theme="blue"]{
+  --bg:#080D18;
+  --bg-panel:#0D1526;
+  --bg-panel-2:#101A30;
+  --border:#1E2A44;
+  --border-soft:#162033;
+  --text:#E6EDF9;
+  --text-dim:#8FA3C4;
+  --text-faint:#52637F;
+  --accent:#4D9FFF;
+  --accent-soft:rgba(77,159,255,0.16);
+  --accent-dim:#27456B;
+  --on-accent:#07101D;
+}
+
+[data-theme="red"]{
+  --bg:#150808;
+  --bg-panel:#200B0B;
+  --bg-panel-2:#260E0E;
+  --border:#3A1717;
+  --border-soft:#2A1111;
+  --text:#F9E8E8;
+  --text-dim:#C49494;
+  --text-faint:#755555;
+  --accent:#FF5A5A;
+  --accent-soft:rgba(255,90,90,0.16);
+  --accent-dim:#6E2A2A;
+  --on-accent:#1A0808;
+}
+
+[data-theme="green"]{
+  --bg:#08120B;
+  --bg-panel:#0C1A10;
+  --bg-panel-2:#0F2014;
+  --border:#1B3221;
+  --border-soft:#142617;
+  --text:#E8F7EC;
+  --text-dim:#93C2A0;
+  --text-faint:#527059;
+  --accent:#34D399;
+  --accent-soft:rgba(52,211,153,0.16);
+  --accent-dim:#1F4A36;
+  --on-accent:#06130C;
+}
+
+[data-theme="pink"]{
+  --bg:#150813;
+  --bg-panel:#1F0C1C;
+  --bg-panel-2:#261021;
+  --border:#3A1A33;
+  --border-soft:#291223;
+  --text:#FAE9F6;
+  --text-dim:#C594BC;
+  --text-faint:#755570;
+  --accent:#F472B6;
+  --accent-soft:rgba(244,114,182,0.16);
+  --accent-dim:#6E2C55;
+  --on-accent:#1A0814;
+}
+
+[data-theme="orange"]{
+  --bg:#150F08;
+  --bg-panel:#20160B;
+  --bg-panel-2:#271A0E;
+  --border:#3A2817;
+  --border-soft:#2A1D11;
+  --text:#FAF0E6;
+  --text-dim:#C4A884;
+  --text-faint:#75634A;
+  --accent:#FB923C;
+  --accent-soft:rgba(251,146,60,0.16);
+  --accent-dim:#6E3F1F;
+  --on-accent:#1A0F06;
 }
 
 *{
@@ -45,6 +179,7 @@ body{
   font-family:var(--sans);
   line-height:1.5;
   -webkit-font-smoothing:antialiased;
+  transition:background-color .25s ease,color .25s ease;
 }
 
 .wrap{
@@ -106,8 +241,109 @@ button{
   color:var(--text-faint);
 }
 
-.translate-btn{
+.topbar-actions{
   margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* Theme button + menu */
+
+.theme-wrap{
+  position:relative;
+}
+
+.theme-btn{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:var(--bg-panel-2);
+  color:var(--text-dim);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:7px 11px;
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:600;
+  transition:border-color .15s,color .15s,background .15s;
+}
+
+.theme-btn:hover{
+  border-color:var(--accent-dim);
+  color:var(--accent);
+  background:var(--accent-soft);
+}
+
+.theme-swatch{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:var(--accent);
+  flex:none;
+}
+
+.theme-menu{
+  position:absolute;
+  top:calc(100% + 10px);
+  right:0;
+  width:220px;
+  background:var(--bg-panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px;
+  z-index:40;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+}
+
+.theme-menu-head{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-faint);
+  margin-bottom:10px;
+}
+
+.theme-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+
+.theme-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:var(--bg-panel-2);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:8px 10px;
+  color:var(--text-dim);
+  font-size:12px;
+  text-align:left;
+  transition:border-color .15s,color .15s,background .15s;
+}
+
+.theme-item:hover{
+  border-color:var(--accent-dim);
+  color:var(--text);
+}
+
+.theme-item.is-active{
+  border-color:var(--accent);
+  color:var(--accent);
+  background:var(--accent-soft);
+}
+
+.theme-dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  flex:none;
+}
+
+.translate-btn{
   background:var(--bg-panel-2);
   color:var(--text-dim);
   border:1px solid var(--border);
@@ -442,7 +678,7 @@ button{
   width:100%;
   margin-top:22px;
   background:var(--accent);
-  color:#0A0B0D;
+  color:var(--on-accent);
   font-weight:600;
   font-size:14px;
   border:none;
@@ -576,7 +812,7 @@ button{
     order:3;
   }
 
-  .translate-btn{
+  .topbar-actions{
     margin-left:auto;
   }
 
@@ -605,17 +841,53 @@ button{
     </span>
 
     <span class="topbar-tag" id="topbarTag">
-      obfuscateur js — By DybyTech
+      js obfuscator — By Sahan Dissanyaka
     </span>
 
-    <button
-      type="button"
-      class="translate-btn"
-      id="translateBtn"
-      aria-label="Changer la langue"
-    >
-      FR / EN
-    </button>
+    <div class="topbar-actions">
+
+      <div class="theme-wrap">
+
+        <button
+          type="button"
+          class="theme-btn"
+          id="themeBtn"
+          aria-label="Change theme"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <span class="theme-swatch" id="themeSwatch"></span>
+          <span id="themeLabel">Dark</span>
+        </button>
+
+        <div
+          class="theme-menu"
+          id="themeMenu"
+          hidden
+        >
+          <div
+            class="theme-menu-head"
+            id="themeMenuTitle"
+          >Theme</div>
+
+          <div
+            class="theme-grid"
+            id="themeGrid"
+          ></div>
+        </div>
+
+      </div>
+
+      <button
+        type="button"
+        class="translate-btn"
+        id="translateBtn"
+        aria-label="Change language"
+      >
+        EN / සිංහල
+      </button>
+
+    </div>
 
   </div>
 </header>
@@ -632,19 +904,19 @@ button{
 
     <h1 class="hero-title">
       <span id="heroTitle">
-        Rends ton code
+        Make your code
       </span><br>
 
       <span
         class="scramble-word"
         id="scrambleWord"
-      >illisible</span>.
+      >unreadable</span>.
     </h1>
 
     <p class="hero-sub" id="heroSub">
-      Colle ou dépose un fichier .js, choisis le niveau de protection,
-      récupère une version obfusquée. Tout se passe dans ton navigateur —
-      rien n'est envoyé nulle part.
+      Paste or drop a .js file, choose the protection level,
+      and get an obfuscated version. Everything happens in your browser —
+      nothing is uploaded anywhere.
     </p>
 
     <div class="hero-demo" aria-hidden="true">
@@ -679,11 +951,11 @@ button{
       <span class="step-num">01</span>
 
       <h3 id="step1Title">
-        Dépose ton fichier
+        Drop your file
       </h3>
 
       <p id="step1Text">
-        .js, .mjs ou .cjs — ou colle le code directement.
+        .js, .mjs or .cjs — or paste the code directly.
       </p>
     </div>
 
@@ -691,11 +963,11 @@ button{
       <span class="step-num">02</span>
 
       <h3 id="step2Title">
-        Choisis le niveau
+        Choose the level
       </h3>
 
       <p id="step2Text">
-        Léger, moyen ou lourd — ou règle chaque option toi-même.
+        Light, medium or heavy — or configure every option yourself.
       </p>
     </div>
 
@@ -703,11 +975,11 @@ button{
       <span class="step-num">03</span>
 
       <h3 id="step3Title">
-        Récupère le résultat
+        Get the result
       </h3>
 
       <p id="step3Text">
-        Copie ou télécharge le fichier obfusqué directement.
+        Copy or download the obfuscated file directly.
       </p>
     </div>
 
@@ -747,13 +1019,13 @@ button{
           class="dz-title"
           id="dropTitle"
         >
-          Glisse ton fichier ici
+          Drop your file here
         </p>
 
         <p class="dz-sub">
 
           <span id="orBrowse">
-            ou
+            or
           </span>
 
           <button
@@ -761,7 +1033,7 @@ button{
             class="link-btn"
             id="browseBtn"
           >
-            parcourir
+            browse
           </button>
 
         </p>
@@ -775,7 +1047,7 @@ button{
 
       <div class="or-row">
         <span id="pasteLabel">
-          ou colle ton code
+          or paste your code
         </span>
       </div>
 
@@ -783,7 +1055,7 @@ button{
         id="codeInput"
         class="code-textarea"
         placeholder="function hello() {
-  console.log('salut');
+  console.log('hello');
 }"
         spellcheck="false"
       ></textarea>
@@ -798,7 +1070,7 @@ button{
         <span
           class="panel-label"
           id="levelLabel"
-        >Niveau</span>
+        >Level</span>
       </div>
 
       <div
@@ -815,14 +1087,14 @@ button{
             class="preset-name"
             id="lightName"
           >
-            Léger
+            Light
           </span>
 
           <span
             class="preset-desc"
             id="lightDesc"
           >
-            Noms renommés, chaînes cachées
+            Renamed identifiers, hidden strings
           </span>
         </button>
 
@@ -835,14 +1107,14 @@ button{
             class="preset-name"
             id="mediumName"
           >
-            Moyen
+            Medium
           </span>
 
           <span
             class="preset-desc"
             id="mediumDesc"
           >
-            + flux de contrôle, auto-défense
+            + control flow, self-defense
           </span>
         </button>
 
@@ -855,14 +1127,14 @@ button{
             class="preset-name"
             id="heavyName"
           >
-            Lourd
+            Heavy
           </span>
 
           <span
             class="preset-desc"
             id="heavyDesc"
           >
-            + anti-debug, exécution ralentie
+            + anti-debug, slower execution
           </span>
         </button>
 
@@ -888,7 +1160,7 @@ button{
           >
 
           <span id="selfDefendingText">
-            Auto-défense (casse si reformaté)
+            Self-defense (breaks if reformatted)
           </span>
 
         </label>
@@ -901,7 +1173,7 @@ button{
           >
 
           <span id="debugProtectionText">
-            Anti-debug (bloque devtools)
+            Anti-debug (blocks devtools)
           </span>
 
         </label>
@@ -914,7 +1186,7 @@ button{
           >
 
           <span id="consoleText">
-            Désactiver console.log
+            Disable console.log
           </span>
 
         </label>
@@ -927,7 +1199,7 @@ button{
           >
 
           <span id="renameGlobalsText">
-            Renommer variables globales
+            Rename global variables
           </span>
 
         </label>
@@ -939,7 +1211,7 @@ button{
         <span
           class="panel-label"
           id="targetLabel"
-        >Cible</span>
+        >Target</span>
 
         <div
           class="segmented"
@@ -961,7 +1233,7 @@ button{
             data-target="browser"
             id="browserBtn"
           >
-            Navigateur
+            Browser
           </button>
 
         </div>
@@ -973,7 +1245,7 @@ button{
         class="run-btn"
         id="runBtn"
       >
-        Obfusquer
+        Obfuscate
       </button>
 
       <p
@@ -1007,7 +1279,7 @@ button{
           class="panel-label"
           id="resultLabel"
         >
-          Résultat
+          Result
         </span>
 
         <span
@@ -1031,7 +1303,7 @@ button{
           class="secondary-btn"
           id="copyBtn"
         >
-          Copier
+          Copy
         </button>
 
         <button
@@ -1039,7 +1311,7 @@ button{
           class="run-btn"
           id="downloadBtn"
         >
-          Télécharger
+          Download
         </button>
 
       </div>
@@ -1061,12 +1333,12 @@ button{
   <div class="wrap">
 
     <span>
-      obfr
+      obfr — Sahan Dissanyaka
     </span>
 
     <span class="footer-powered">
       POWERED BY
-      <strong>DYBY TECH</strong>
+      <strong>SAHAN DISSANYAKA</strong>
     </span>
 
     <span
@@ -1225,33 +1497,56 @@ class TextScramble {
 
 }
 
-const words = [
-  "illisible",
-  "opaque",
-  "verrouillé",
-  "protégé"
-];
-
 const scrambleEl =
   document.getElementById(
     "scrambleWord"
   );
 
-if(scrambleEl){
+const SCRAMBLE_WORDS = {
+  en: [
+    "unreadable",
+    "opaque",
+    "locked",
+    "protected"
+  ],
+  si: [
+    "කියවිය නොහැකි",
+    "අපැහැදිලි",
+    "අගුළු දමා",
+    "ආරක්ෂිත"
+  ]
+};
 
-  const fx =
-    new TextScramble(scrambleEl);
+let scrambleFx = null;
+let scrambleTimer = null;
+
+function startScramble(){
+
+  if(!scrambleEl)
+    return;
+
+  if(scrambleTimer)
+    clearTimeout(scrambleTimer);
+
+  const words =
+    SCRAMBLE_WORDS[currentLanguage] ||
+    SCRAMBLE_WORDS.en;
+
+  if(!scrambleFx)
+    scrambleFx =
+      new TextScramble(scrambleEl);
 
   let i = 0;
 
   const next = () => {
 
-    fx.setText(words[i]).then(() => {
+    scrambleFx.setText(words[i]).then(() => {
 
-      setTimeout(
-        next,
-        2200
-      );
+      scrambleTimer =
+        setTimeout(
+          next,
+          2200
+        );
 
     });
 
@@ -1445,7 +1740,7 @@ function loadFile(file){
       reader.result;
 
     dzFile.textContent =
-      `${file.name} — ${(file.size / 1024).toFixed(1)} Ko`;
+      `${file.name} — ${(file.size / 1024).toFixed(1)} KB`;
 
     lastFilename =
       file.name.replace(
@@ -1666,8 +1961,8 @@ runBtn.addEventListener(
     if(!sourceCode.trim()){
 
       runError.textContent =
-        currentLanguage === "fr"
-          ? "Dépose un fichier ou colle du code d'abord."
+        currentLanguage === "si"
+          ? "මුලින්ම ගොනුවක් ඇද දමන්න හෝ කේතයක් අලවන්න."
           : "Drop a file or paste some code first.";
 
       return;
@@ -1680,8 +1975,8 @@ runBtn.addEventListener(
     ){
 
       runError.textContent =
-        currentLanguage === "fr"
-          ? "La librairie d'obfuscation n'a pas pu se charger. Une connexion internet est requise."
+        currentLanguage === "si"
+          ? "Obfuscation library පූරණය කළ නොහැකි විය. අන්තර්ජාල සම්බන්ධතාවයක් අවශ්‍යයි."
           : "The obfuscation library could not be loaded. An internet connection is required.";
 
       return;
@@ -1691,8 +1986,8 @@ runBtn.addEventListener(
     runBtn.disabled = true;
 
     runBtn.textContent =
-      currentLanguage === "fr"
-        ? "Obfuscation…"
+      currentLanguage === "si"
+        ? "Obfuscate වෙමින්…"
         : "Obfuscating…";
 
     setTimeout(() => {
@@ -1745,7 +2040,9 @@ runBtn.addEventListener(
           obfuscatedCode;
 
         resultStats.textContent =
-          `${sourceCode.length} → ${obfuscatedCode.length} caractères`;
+          currentLanguage === "si"
+            ? `${sourceCode.length} → ${obfuscatedCode.length} අක්ෂර`
+            : `${sourceCode.length} → ${obfuscatedCode.length} chars`;
 
         resultSection.hidden =
           false;
@@ -1762,8 +2059,8 @@ runBtn.addEventListener(
         runError.textContent =
           err.message ||
           (
-            currentLanguage === "fr"
-              ? "Erreur pendant l'obfuscation."
+            currentLanguage === "si"
+              ? "Obfuscation දෝෂයකි."
               : "Obfuscation error."
           );
 
@@ -1775,8 +2072,8 @@ runBtn.addEventListener(
           false;
 
         runBtn.textContent =
-          currentLanguage === "fr"
-            ? "Obfusquer"
+          currentLanguage === "si"
+            ? "Obfuscate කරන්න"
             : "Obfuscate";
 
       }
@@ -1804,8 +2101,8 @@ copyBtn.addEventListener(
         copyBtn.textContent;
 
       copyBtn.textContent =
-        currentLanguage === "fr"
-          ? "Copié"
+        currentLanguage === "si"
+          ? "පිටපත් කළා"
           : "Copied";
 
       setTimeout(
@@ -1871,118 +2168,266 @@ downloadBtn.addEventListener(
 );
 
 /* =========================================================
+   THEMES
+========================================================= */
+
+const THEME_IDS = [
+  "amoled",
+  "white",
+  "dark",
+  "purple",
+  "blue",
+  "red",
+  "green",
+  "pink",
+  "orange"
+];
+
+const THEME_NAMES = {
+  amoled: { en:"Amoled Dark", si:"ඇමෝලෙඩ් අඳුරු" },
+  white:  { en:"White",       si:"සුදු" },
+  dark:   { en:"Dark",        si:"අඳුරු" },
+  purple: { en:"Purple",      si:"දම්" },
+  blue:   { en:"Blue",        si:"නිල්" },
+  red:    { en:"Red",         si:"රතු" },
+  green:  { en:"Green",       si:"කොළ" },
+  pink:   { en:"Pink",        si:"රෝස" },
+  orange: { en:"Orange",      si:"තැඹිලි" }
+};
+
+const THEME_ACCENTS = {
+  amoled: "#E8E8EE",
+  white:  "#2F5BEA",
+  dark:   "#6C8CFF",
+  purple: "#A78BFA",
+  blue:   "#4D9FFF",
+  red:    "#FF5A5A",
+  green:  "#34D399",
+  pink:   "#F472B6",
+  orange: "#FB923C"
+};
+
+const themeBtn =
+  document.getElementById(
+    "themeBtn"
+  );
+
+const themeMenu =
+  document.getElementById(
+    "themeMenu"
+  );
+
+const themeGrid =
+  document.getElementById(
+    "themeGrid"
+  );
+
+const themeLabel =
+  document.getElementById(
+    "themeLabel"
+  );
+
+const themeSwatch =
+  document.getElementById(
+    "themeSwatch"
+  );
+
+let currentTheme =
+  localStorage.getItem(
+    "obfr-theme"
+  ) || "dark";
+
+function themeName(id){
+
+  const entry =
+    THEME_NAMES[id] ||
+    { en:id, si:id };
+
+  return entry[currentLanguage] ||
+    entry.en;
+
+}
+
+function applyTheme(id){
+
+  if(!THEME_NAMES[id])
+    id = "dark";
+
+  currentTheme = id;
+
+  document.documentElement.setAttribute(
+    "data-theme",
+    id
+  );
+
+  try{
+    localStorage.setItem(
+      "obfr-theme",
+      id
+    );
+  }catch(e){}
+
+  updateThemeUI();
+
+}
+
+function updateThemeUI(){
+
+  themeLabel.textContent =
+    themeName(currentTheme);
+
+  const accent =
+    getComputedStyle(
+      document.documentElement
+    )
+    .getPropertyValue("--accent")
+    .trim();
+
+  themeSwatch.style.background =
+    accent || THEME_ACCENTS.dark;
+
+  themeGrid
+    .querySelectorAll(".theme-item")
+    .forEach(item => {
+
+      item.classList.toggle(
+        "is-active",
+        item.dataset.theme ===
+          currentTheme
+      );
+
+    });
+
+}
+
+function renderThemeMenu(){
+
+  themeGrid.innerHTML = "";
+
+  THEME_IDS.forEach(id => {
+
+    const btn =
+      document.createElement("button");
+
+    btn.type = "button";
+    btn.className = "theme-item";
+    btn.dataset.theme = id;
+
+    const dot =
+      document.createElement("span");
+
+    dot.className = "theme-dot";
+    dot.style.background =
+      THEME_ACCENTS[id] ||
+      THEME_ACCENTS.dark;
+
+    const name =
+      document.createElement("span");
+
+    name.className = "theme-item-name";
+    name.textContent = themeName(id);
+
+    btn.appendChild(dot);
+    btn.appendChild(name);
+
+    themeGrid.appendChild(btn);
+
+  });
+
+  updateThemeUI();
+
+}
+
+themeBtn.addEventListener(
+  "click",
+  () => {
+
+    const open =
+      !themeMenu.hidden;
+
+    themeMenu.hidden = open;
+
+    themeBtn.setAttribute(
+      "aria-expanded",
+      String(!open)
+    );
+
+  }
+);
+
+themeGrid.addEventListener(
+  "click",
+  e => {
+
+    const item =
+      e.target.closest(".theme-item");
+
+    if(!item)
+      return;
+
+    applyTheme(
+      item.dataset.theme
+    );
+
+    themeMenu.hidden = true;
+
+    themeBtn.setAttribute(
+      "aria-expanded",
+      "false"
+    );
+
+  }
+);
+
+document.addEventListener(
+  "click",
+  e => {
+
+    if(
+      !themeBtn.contains(e.target) &&
+      !themeMenu.contains(e.target)
+    ){
+
+      themeMenu.hidden = true;
+
+      themeBtn.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+    }
+
+  }
+);
+
+document.addEventListener(
+  "keydown",
+  e => {
+
+    if(e.key === "Escape"){
+
+      themeMenu.hidden = true;
+
+      themeBtn.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+    }
+
+  }
+);
+
+/* =========================================================
    TRANSLATION
 ========================================================= */
 
 const translations = {
 
-  fr: {
-
-    tag:
-      "obfuscateur js — 100% navigateur",
-
-    heroTitle:
-      "Rends ton code",
-
-    heroSub:
-      "Colle ou dépose un fichier .js, choisis le niveau de protection, récupère une version obfusquée. Tout se passe dans ton navigateur — rien n'est envoyé nulle part.",
-
-    step1Title:
-      "Dépose ton fichier",
-
-    step1Text:
-      ".js, .mjs ou .cjs — ou colle le code directement.",
-
-    step2Title:
-      "Choisis le niveau",
-
-    step2Text:
-      "Léger, moyen ou lourd — ou règle chaque option toi-même.",
-
-    step3Title:
-      "Récupère le résultat",
-
-    step3Text:
-      "Copie ou télécharge le fichier obfusqué directement.",
-
-    source:
-      "Source",
-
-    dropTitle:
-      "Glisse ton fichier ici",
-
-    or:
-      "ou",
-
-    browse:
-      "parcourir",
-
-    paste:
-      "ou colle ton code",
-
-    level:
-      "Niveau",
-
-    light:
-      "Léger",
-
-    lightDesc:
-      "Noms renommés, chaînes cachées",
-
-    medium:
-      "Moyen",
-
-    mediumDesc:
-      "+ flux de contrôle, auto-défense",
-
-    heavy:
-      "Lourd",
-
-    heavyDesc:
-      "+ anti-debug, exécution ralentie",
-
-    options:
-      "Options",
-
-    selfDefending:
-      "Auto-défense (casse si reformaté)",
-
-    debugProtection:
-      "Anti-debug (bloque devtools)",
-
-    console:
-      "Désactiver console.log",
-
-    renameGlobals:
-      "Renommer variables globales",
-
-    target:
-      "Cible",
-
-    browser:
-      "Navigateur",
-
-    obfuscate:
-      "Obfusquer",
-
-    result:
-      "Résultat",
-
-    copy:
-      "Copier",
-
-    download:
-      "Télécharger",
-
-    footer:
-      "obfuscation locale — aucune donnée ne quitte ton navigateur."
-
-  },
-
   en: {
 
     tag:
-      "js obfuscator — 100% browser",
+      "js obfuscator — By Sahan Dissanyaka",
 
     heroTitle:
       "Make your code",
@@ -2077,8 +2522,117 @@ const translations = {
     download:
       "Download",
 
+    theme:
+      "Theme",
+
     footer:
       "local obfuscation — no data leaves your browser."
+
+  },
+
+  si: {
+
+    tag:
+      "js obfuscator — Sahan Dissanyaka විසිනි",
+
+    heroTitle:
+      "ඔබේ කේතය",
+
+    heroSub:
+      ".js ගොනුවක් අලවන්න හෝ ඇද දමන්න, ආරක්ෂණ මට්ටම තෝරා obfuscate කළ අනුවාදය ලබා ගන්න. සියල්ල ඔබේ බ්‍රවුසරය තුළම සිදු වේ — කිසිවක් කොතැනකවත් upload නොවේ.",
+
+    step1Title:
+      "ඔබේ ගොනුව ඇද දමන්න",
+
+    step1Text:
+      ".js, .mjs හෝ .cjs — නැතහොත් කේතය කෙලින්ම අලවන්න.",
+
+    step2Title:
+      "මට්ටම තෝරන්න",
+
+    step2Text:
+      "සැහැල්ලු, මධ්‍යම හෝ බර — නැතහොත් සෑම විකල්පයක්ම ඔබම සකසන්න.",
+
+    step3Title:
+      "ප්‍රතිඵලය ලබා ගන්න",
+
+    step3Text:
+      "obfuscate කළ ගොනුව කෙලින්ම පිටපත් කරන්න හෝ බාගන්න.",
+
+    source:
+      "මූලාශ්‍රය",
+
+    dropTitle:
+      "ඔබේ ගොනුව මෙතැනට ඇද දමන්න",
+
+    or:
+      "හෝ",
+
+    browse:
+      "බ්‍රවුස් කරන්න",
+
+    paste:
+      "හෝ ඔබේ කේතය අලවන්න",
+
+    level:
+      "මට්ටම",
+
+    light:
+      "සැහැල්ලු",
+
+    lightDesc:
+      "නැවත නම් කළ identifiers, සැඟවූ strings",
+
+    medium:
+      "මධ්‍යම",
+
+    mediumDesc:
+      "+ control flow, ස්වයං-ආරක්ෂාව",
+
+    heavy:
+      "බර",
+
+    heavyDesc:
+      "+ anti-debug, මන්දගාමී ක්‍රියාත්මක වීම",
+
+    options:
+      "විකල්ප",
+
+    selfDefending:
+      "ස්වයං-ආරක්ෂාව (නැවත සකස් කළහොත් කැඩේ)",
+
+    debugProtection:
+      "Anti-debug (devtools අවහිර කරයි)",
+
+    console:
+      "console.log අක්‍රිය කරන්න",
+
+    renameGlobals:
+      "global විචල්‍ය නැවත නම් කරන්න",
+
+    target:
+      "ඉලක්කය",
+
+    browser:
+      "බ්‍රවුසරය",
+
+    obfuscate:
+      "Obfuscate කරන්න",
+
+    result:
+      "ප්‍රතිඵලය",
+
+    copy:
+      "පිටපත් කරන්න",
+
+    download:
+      "බාගන්න",
+
+    theme:
+      "තේමාව",
+
+    footer:
+      "දේශීය obfuscation — ඔබේ බ්‍රවුසරයෙන් කිසිදු දත්තයක් පිටව නොයයි."
 
   }
 
@@ -2087,7 +2641,14 @@ const translations = {
 let currentLanguage =
   localStorage.getItem(
     "obfr-language"
-  ) || "fr";
+  );
+
+if(
+  currentLanguage !== "en" &&
+  currentLanguage !== "si"
+){
+  currentLanguage = "en";
+}
 
 function translatePage(){
 
@@ -2260,6 +2821,11 @@ function translatePage(){
     t.download;
 
   document.getElementById(
+    "themeMenuTitle"
+  ).textContent =
+    t.theme;
+
+  document.getElementById(
     "footerText"
   ).textContent =
     t.footer;
@@ -2267,9 +2833,21 @@ function translatePage(){
   document.getElementById(
     "translateBtn"
   ).textContent =
-    currentLanguage === "fr"
-      ? "FR / EN"
-      : "EN / FR";
+    currentLanguage === "si"
+      ? "සිංහල / EN"
+      : "EN / සිංහල";
+
+}
+
+function refreshDynamicUI(){
+
+  translatePage();
+
+  renderThemeMenu();
+
+  updateThemeUI();
+
+  startScramble();
 
 }
 
@@ -2282,21 +2860,25 @@ document
     () => {
 
       currentLanguage =
-        currentLanguage === "fr"
+        currentLanguage === "si"
           ? "en"
-          : "fr";
+          : "si";
 
-      localStorage.setItem(
-        "obfr-language",
-        currentLanguage
-      );
+      try{
+        localStorage.setItem(
+          "obfr-language",
+          currentLanguage
+        );
+      }catch(e){}
 
-      translatePage();
+      refreshDynamicUI();
 
     }
   );
 
-translatePage();
+applyTheme(currentTheme);
+
+refreshDynamicUI();
 
 </script>
 
